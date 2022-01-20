@@ -16,34 +16,31 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#ifndef __BANK_H__
-#define __BANK_H__
+#ifndef __FILE_H__
+#define __FILE_H__
 
 #include "intern.h"
 
-struct MemEntry;
+struct File_impl;
 
-struct UnpackContext {
-	uint16_t size;
-	uint32_t crc;
-	uint32_t chk;
-	int32_t datasize;
-};
+struct File {
+	File_impl *_impl;
 
-struct Bank {
-	UnpackContext _unpCtx;
-	const char *_dataDir;
-	uint8_t *_iBuf, *_oBuf, *_startBuf;
+	File(bool gzipped = false);
+	~File();
 
-	Bank(const char *dataDir);
-
-	bool read(const MemEntry *me, uint8_t *buf);
-	void decUnk1(uint8_t numChunks, uint8_t addCount);
-	void decUnk2(uint8_t numChunks);
-	bool unpack();
-	uint16_t getCode(uint8_t numChunks);
-	bool nextChunk();
-	bool rcr(bool CF);
+	bool open(const char *filename, const char *directory, const char *mode="rb");
+	void close();
+	bool ioErr() const;
+	void seek(int32_t off);
+	void read(void *ptr, uint32_t size);
+	uint8_t readByte();
+	uint16_t readUint16BE();
+	uint32_t readUint32BE();
+	void write(void *ptr, uint32_t size);
+	void writeByte(uint8_t b);
+	void writeUint16BE(uint16_t n);
+	void writeUint32BE(uint32_t n);
 };
 
 #endif

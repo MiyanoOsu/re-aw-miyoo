@@ -16,34 +16,44 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#ifndef __BANK_H__
-#define __BANK_H__
+#ifndef __ENGINE_H__
+#define __ENGINE_H__
 
 #include "intern.h"
+#include "vm.h"
+#include "mixer.h"
+#include "sfxplayer.h"
+#include "resource.h"
+#include "video.h"
 
-struct MemEntry;
+struct System;
 
-struct UnpackContext {
-	uint16_t size;
-	uint32_t crc;
-	uint32_t chk;
-	int32_t datasize;
-};
+struct Engine {
+	enum {
+		MAX_SAVE_SLOTS = 100
+	};
 
-struct Bank {
-	UnpackContext _unpCtx;
-	const char *_dataDir;
-	uint8_t *_iBuf, *_oBuf, *_startBuf;
+	System *sys;
+	VirtualMachine vm;
+	Mixer mixer;
+	Resource res;
+	SfxPlayer player;
+	Video video;
+	const char *_dataDir, *_saveDir;
+	uint8_t _stateSlot;
 
-	Bank(const char *dataDir);
+	Engine(System *stub, const char *dataDir, const char *saveDir);
+	~Engine();
 
-	bool read(const MemEntry *me, uint8_t *buf);
-	void decUnk1(uint8_t numChunks, uint8_t addCount);
-	void decUnk2(uint8_t numChunks);
-	bool unpack();
-	uint16_t getCode(uint8_t numChunks);
-	bool nextChunk();
-	bool rcr(bool CF);
+	void run();
+	void init();
+	void finish();
+	void processInput();
+	
+	void makeGameStateName(uint8_t slot, char *buf);
+	void saveGameState(uint8_t slot, const char *desc);
+	void loadGameState(uint8_t slot);
+	const char* getDataDir();
 };
 
 #endif

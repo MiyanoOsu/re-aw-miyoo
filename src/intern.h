@@ -16,34 +16,48 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#ifndef __BANK_H__
-#define __BANK_H__
+#ifndef __INTERN_H__
+#define __INTERN_H__
 
-#include "intern.h"
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+#include <cassert>
 
-struct MemEntry;
+#include "endian.h"
+#include "util.h"
 
-struct UnpackContext {
-	uint16_t size;
-	uint32_t crc;
-	uint32_t chk;
-	int32_t datasize;
+#define MAX(x,y) ((x)>(y)?(x):(y))
+#define MIN(x,y) ((x)<(y)?(x):(y))
+#define ARRAYSIZE(a) (sizeof(a)/sizeof(a[0]))
+
+template<typename T>
+inline void SWAP(T &a, T &b) {
+	T tmp = a; 
+	a = b;
+	b = tmp;
+}
+
+struct Ptr {
+	uint8_t *pc;
+	
+	uint8_t fetchByte() {
+		return *pc++;
+	}
+	
+	uint16_t fetchWord() {
+		uint16_t i = READ_BE_UINT16(pc);
+		pc += 2;
+		return i;
+	}
 };
 
-struct Bank {
-	UnpackContext _unpCtx;
-	const char *_dataDir;
-	uint8_t *_iBuf, *_oBuf, *_startBuf;
+struct Point {
+	int16_t x, y;
 
-	Bank(const char *dataDir);
-
-	bool read(const MemEntry *me, uint8_t *buf);
-	void decUnk1(uint8_t numChunks, uint8_t addCount);
-	void decUnk2(uint8_t numChunks);
-	bool unpack();
-	uint16_t getCode(uint8_t numChunks);
-	bool nextChunk();
-	bool rcr(bool CF);
+	Point() : x(0), y(0) {}
+	Point(int16_t xx, int16_t yy) : x(xx), y(yy) {}
+	Point(const Point &p) : x(p.x), y(p.y) {}
 };
 
 #endif

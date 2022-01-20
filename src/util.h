@@ -16,34 +16,28 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#ifndef __BANK_H__
-#define __BANK_H__
+#ifndef __UTIL_H__
+#define __UTIL_H__
 
 #include "intern.h"
 
-struct MemEntry;
-
-struct UnpackContext {
-	uint16_t size;
-	uint32_t crc;
-	uint32_t chk;
-	int32_t datasize;
+enum {
+	DBG_VM = 1 << 0,
+	DBG_BANK  = 1 << 1,
+	DBG_VIDEO = 1 << 2,
+	DBG_SND   = 1 << 3,
+	DBG_SER   = 1 << 4,
+	DBG_INFO  = 1 << 5,
+	DBG_RES   = 1 << 6
 };
 
-struct Bank {
-	UnpackContext _unpCtx;
-	const char *_dataDir;
-	uint8_t *_iBuf, *_oBuf, *_startBuf;
+extern uint16_t g_debugMask;
 
-	Bank(const char *dataDir);
+extern void debug(uint16_t cm, const char *msg, ...);
+extern void error(const char *msg, ...);
+extern void warning(const char *msg, ...);
 
-	bool read(const MemEntry *me, uint8_t *buf);
-	void decUnk1(uint8_t numChunks, uint8_t addCount);
-	void decUnk2(uint8_t numChunks);
-	bool unpack();
-	uint16_t getCode(uint8_t numChunks);
-	bool nextChunk();
-	bool rcr(bool CF);
-};
+extern void string_lower(char *p);
+extern void string_upper(char *p);
 
 #endif

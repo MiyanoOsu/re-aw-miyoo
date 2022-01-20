@@ -16,34 +16,42 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#ifndef __BANK_H__
-#define __BANK_H__
+#ifndef __SYS_H__
+#define __SYS_H__
 
-#include "intern.h"
+#include <stdint.h>
 
-struct MemEntry;
+//FCS added for windows build
+#ifdef _WIN32
+	#define SYS_LITTLE_ENDIAN
+#endif
 
-struct UnpackContext {
-	uint16_t size;
-	uint32_t crc;
-	uint32_t chk;
-	int32_t datasize;
-};
+#if defined SYS_LITTLE_ENDIAN
 
-struct Bank {
-	UnpackContext _unpCtx;
-	const char *_dataDir;
-	uint8_t *_iBuf, *_oBuf, *_startBuf;
+inline uint16_t READ_BE_UINT16(const void *ptr) {
+	const uint8_t *b = (const uint8_t *)ptr;
+	return (b[0] << 8) | b[1];
+}
 
-	Bank(const char *dataDir);
+inline uint32_t READ_BE_UINT32(const void *ptr) {
+	const uint8_t *b = (const uint8_t *)ptr;
+	return (b[0] << 24) | (b[1] << 16) | (b[2] << 8) | b[3];
+}
 
-	bool read(const MemEntry *me, uint8_t *buf);
-	void decUnk1(uint8_t numChunks, uint8_t addCount);
-	void decUnk2(uint8_t numChunks);
-	bool unpack();
-	uint16_t getCode(uint8_t numChunks);
-	bool nextChunk();
-	bool rcr(bool CF);
-};
+#elif defined SYS_BIG_ENDIAN
+
+inline uint16_t READ_BE_UINT16(const void *ptr) {
+	return *(const uint16_t *)ptr;
+}
+
+inline uint32_t READ_BE_UINT32(const void *ptr) {
+	return *(const uint32_t *)ptr;
+}
+
+#else
+
+#error No endianness defined
+
+#endif
 
 #endif
