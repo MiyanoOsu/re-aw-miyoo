@@ -22,4 +22,3 @@ Keymap:
 # Develope: 
 - https://en.wikipedia.org/wiki/Another_World_(video_game)
 - Éric Chahi
-- Miyoo patch: Miyano
