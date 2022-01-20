@@ -10,7 +10,7 @@ build from source: make
 Keymap:
 
     A: Jump
-    B: Run/Shoot/Action
+    B: Run / Shoot / Action
     Y: pause
     X: hack speed
     Select: exit
