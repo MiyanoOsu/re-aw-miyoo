@@ -1,4 +1,4 @@
-# Re_Another_World_miyoo
+# Re_Another_World
 (Out Of The World 1) (Miyoo homebrew)
 
 Port for Powkiddy Q90/V90
