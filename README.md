@@ -1,5 +1,5 @@
 # Re_Another_World
-(Out Of The World 1) (Miyoo homebrew)
+(Out Of The World ) (Miyoo homebrew)
 
 Port for Powkiddy Q90/V90
 
@@ -22,4 +22,4 @@ Keymap:
 # Develope: 
 - https://en.wikipedia.org/wiki/Another_World_(video_game)
 - Éric Chahi
-- Fork : https://github.com/fabiensanglard/Another-World-Bytecode-Interpreter
+- Fork :  https://github.com/fabiensanglard/Another-World-Bytecode-Interpreter
