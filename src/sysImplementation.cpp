@@ -110,7 +110,7 @@ void SDLStub::init(const char *title) {
 	if (!_offscreen) {
 		error("Unable to allocate offscreen buffer");
 	}
-	_fullscreen = false;
+	_fullscreen = true;
 	_scaler = 0;
 	prepareGfxMode();
 }
@@ -135,6 +135,23 @@ void SDLStub::setPalette(uint8_t start, uint8_t numEnties, const uint8_t *buf) {
 		palette[i] = SDL_MapRGB(_screen->format, c[0], c[1], c[2]);
 	}
 
+}
+
+void lock_fps(uint8_t fps)
+{
+	static uint16_t curTicks;
+	static uint16_t lastTicks;
+	float t;
+
+	curTicks = SDL_GetTicks();
+	t = curTicks - lastTicks;
+
+	if (t >= 1000.0f/fps)
+	{
+		lastTicks = curTicks;
+		return;
+	}
+	SDL_Delay(1);
 }
 
 void SDLStub::copyRect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t *buf, uint32_t pitch) {
@@ -165,7 +182,8 @@ void SDLStub::copyRect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, 
 	SDL_LockSurface(_screen);
 	(this->*_scalers[_scaler].proc)((uint16_t *)_screen->pixels, _screen->pitch, (uint16_t *)_offscreen, SCREEN_W, SCREEN_W, SCREEN_H);
 	SDL_UnlockSurface(_screen);
-	SDL_UpdateRect(_screen, 0, 0, 0, 0);
+	lock_fps(60);
+	SDL_Flip(_screen);
 }
 
 void SDLStub::processEvents() {
@@ -307,7 +325,7 @@ void SDLStub::unlockMutex(void *mutex) {
 void SDLStub::prepareGfxMode() {
 	int w = SCREEN_W * _scalers[_scaler].factor;
 	int h = SCREEN_H * _scalers[_scaler].factor;
-	_screen = SDL_SetVideoMode(w, h, 16, _fullscreen ? (SDL_FULLSCREEN | SDL_SWSURFACE) : SDL_SWSURFACE);
+	_screen = SDL_SetVideoMode(w, h, 16, _fullscreen ? (SDL_FULLSCREEN | SDL_SWSURFACE | SDL_DOUBLEBUF) : SDL_SWSURFACE);
 	if (!_screen) {
 		error("SDLStub::prepareGfxMode() unable to allocate _screen buffer");
 	}
