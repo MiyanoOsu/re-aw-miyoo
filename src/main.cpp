@@ -20,13 +20,6 @@
 #include "sys.h"
 #include "util.h"
 
-
-static const char *USAGE = 
-	"Raw - Another World Interpreter\n"
-	"Usage: raw [OPTIONS]...\n"
-	"  --datapath=PATH   Path to where the game is installed (default '.')\n"
-	"  --savepath=PATH   Path to where the save files are stored (default '.')\n";
-
 static bool parseOption(const char *arg, const char *longCmd, const char **opt) {
 	bool ret = false;
 	if (arg[0] == '-' && arg[1] == '-') {

@@ -16,13 +16,13 @@ SRCS = src/bank.cpp src/file.cpp src/engine.cpp src/mixer.cpp src/resource.cpp s
 OBJS = $(SRCS:.cpp=.o)
 DEPS = $(SRCS:.cpp=.d)
 
-raw: $(OBJS)
+raw.elf: $(OBJS)
 	$(CXX) $(LDFLAGS) -o $@ $(OBJS) $(SDL_LIBS) -lz
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -MMD -c $< -o $*.o
 
 clean:
-	rm -f src/*.o src/*.d raw
+	rm -f src/*.o src/*.d raw.elf
 
 -include $(DEPS)

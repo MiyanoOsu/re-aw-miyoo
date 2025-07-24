@@ -75,7 +75,6 @@ struct SDLStub : System {
 
 	void prepareGfxMode();
 	void cleanupGfxMode();
-	void switchGfxMode(bool fullscreen, uint8_t scaler);
 
 	void point1_tx(uint16_t *dst, uint16_t dstPitch, const uint16_t *src, uint16_t srcPitch, uint16_t w, uint16_t h);
 	void point2_tx(uint16_t *dst, uint16_t dstPitch, const uint16_t *src, uint16_t srcPitch, uint16_t w, uint16_t h);
@@ -98,13 +97,12 @@ const SDLStub::Scaler SDLStub::_scalers[] = {
 void SDLStub::init(const char *title) {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER);
 	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
-	SDL_ShowCursor(SDL_DISABLE);
 	SDL_WM_SetCaption(title, NULL);
 
 	int x, y; 
 
 	SDL_GetMouseState( &x,&y ); 
-	SDL_ShowCursor( SDL_DISABLE ); 
+	SDL_ShowCursor(SDL_DISABLE); 
 	SDL_WarpMouse( x, y ); 
 
 	memset(&input, 0, sizeof(input));
@@ -164,10 +162,9 @@ void SDLStub::copyRect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, 
 		buf += pitch;
 	}
 
-	SDL_LockSurface(_sclscreen);
-	(this->*_scalers[_scaler].proc)((uint16_t *)_sclscreen->pixels, _sclscreen->pitch, (uint16_t *)_offscreen, SCREEN_W, SCREEN_W, SCREEN_H);
-	SDL_UnlockSurface(_sclscreen);
-	SDL_BlitSurface(_sclscreen, NULL, _screen, NULL);
+	SDL_LockSurface(_screen);
+	(this->*_scalers[_scaler].proc)((uint16_t *)_screen->pixels, _screen->pitch, (uint16_t *)_offscreen, SCREEN_W, SCREEN_W, SCREEN_H);
+	SDL_UnlockSurface(_screen);
 	SDL_UpdateRect(_screen, 0, 0, 0, 0);
 }
 
@@ -310,17 +307,9 @@ void SDLStub::unlockMutex(void *mutex) {
 void SDLStub::prepareGfxMode() {
 	int w = SCREEN_W * _scalers[_scaler].factor;
 	int h = SCREEN_H * _scalers[_scaler].factor;
-	_screen = SDL_SetVideoMode(w, h, 16, _fullscreen ? (SDL_FULLSCREEN | SDL_SWSURFACE) : SDL_HWSURFACE);
+	_screen = SDL_SetVideoMode(w, h, 16, _fullscreen ? (SDL_FULLSCREEN | SDL_SWSURFACE) : SDL_SWSURFACE);
 	if (!_screen) {
 		error("SDLStub::prepareGfxMode() unable to allocate _screen buffer");
-	}
-	_sclscreen = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, 16,
-						_screen->format->Rmask,
-						_screen->format->Gmask,
-						_screen->format->Bmask,
-						_screen->format->Amask);
-	if (!_sclscreen) {
-		error("SDLStub::prepareGfxMode() unable to allocate _sclscreen buffer");
 	}
 }
 
@@ -329,24 +318,10 @@ void SDLStub::cleanupGfxMode() {
 		free(_offscreen);
 		_offscreen = 0;
 	}
-	if (_sclscreen) {
-		SDL_FreeSurface(_sclscreen);
-		_sclscreen = 0;
-	}
 	if (_screen) {
 		SDL_FreeSurface(_screen);
 		_screen = 0;
 	}
-}
-
-void SDLStub::switchGfxMode(bool fullscreen, uint8_t scaler) {
-	SDL_Surface *prev_sclscreen = _sclscreen;
-	SDL_FreeSurface(_screen); 	
-	_fullscreen = fullscreen;
-	_scaler = scaler;
-	prepareGfxMode();
-	SDL_BlitSurface(prev_sclscreen, NULL, _sclscreen, NULL);
-	SDL_FreeSurface(prev_sclscreen);
 }
 
 void SDLStub::point1_tx(uint16_t *dst, uint16_t dstPitch, const uint16_t *src, uint16_t srcPitch, uint16_t w, uint16_t h) {
