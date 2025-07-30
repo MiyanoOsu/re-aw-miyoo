@@ -166,6 +166,11 @@ void Resource::readEntries() {
 */
 void Resource::loadMarkedAsNeeded() {
 
+	static const char *demofile = "demo3.joy";
+	File f;
+	bool demoData = false;
+	if (f.open(demofile, _dataDir))
+		demoData = true;
 	while (1) {
 		
 		MemEntry *me = NULL;
@@ -208,7 +213,7 @@ void Resource::loadMarkedAsNeeded() {
 			me->state = MEMENTRY_STATE_NOT_NEEDED;
 		} else {
 			debug(DBG_BANK, "Resource::load() bufPos=%X size=%X type=%X pos=%X bankId=%X", loadDestination - _memPtrStart, me->packedSize, me->type, me->bankOffset, me->bankId);
-			if(me->bankId == 12 && me->type == RT_BANK) {
+			if(demoData && me->bankId == 12 && me->type == RT_BANK) {
 				me->state = MEMENTRY_STATE_NOT_NEEDED;
 			} else {
 				readBank(me, loadDestination);
