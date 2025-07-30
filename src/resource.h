@@ -68,7 +68,8 @@ struct Resource {
 
 		RT_PALETTE    = 3, // palette (1024=vga + 1024=ega), size=2048
 		RT_BYTECODE = 4,
-		RT_POLY_CINEMATIC   = 5
+		RT_POLY_CINEMATIC   = 5,
+		RT_BANK = 6
 	};
 	
 	enum {

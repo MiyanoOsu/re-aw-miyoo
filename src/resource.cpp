@@ -49,6 +49,7 @@ static const char *resTypeToString(unsigned int type)
 		"RT_PALETTE",
 		"RT_BYTECODE",
 		"RT_POLY_CINEMATIC"
+		"RT_BANK"
 	};
 	if (type >= (sizeof(resTypes) / sizeof(const char *)))
 		return "RT_UNKNOWN";
@@ -207,14 +208,18 @@ void Resource::loadMarkedAsNeeded() {
 			me->state = MEMENTRY_STATE_NOT_NEEDED;
 		} else {
 			debug(DBG_BANK, "Resource::load() bufPos=%X size=%X type=%X pos=%X bankId=%X", loadDestination - _memPtrStart, me->packedSize, me->type, me->bankOffset, me->bankId);
-			readBank(me, loadDestination);
-			if(me->type == RT_POLY_ANIM) {
-				video->copyPagePtr(_vidCurPtr);
-				me->state = 0;
+			if(me->bankId == 12 && me->type == RT_BANK) {
+				me->state = MEMENTRY_STATE_NOT_NEEDED;
 			} else {
-				me->bufPtr = loadDestination;
-				me->state = MEMENTRY_STATE_LOADED;
-				_scriptCurPtr += me->size;
+				readBank(me, loadDestination);
+				if(me->type == RT_POLY_ANIM) {
+					video->copyPagePtr(_vidCurPtr);
+					me->state = 0;
+				} else {
+					me->bufPtr = loadDestination;
+					me->state = MEMENTRY_STATE_LOADED;
+					_scriptCurPtr += me->size;
+				}
 			}
 		}
 
