@@ -27,7 +27,7 @@ make -j $(nproc)
 
 # Keymap:
 ~~~
-    A: Jump
+    A: Jump / Swim
     B: Run / Shoot / Action
     Y: pause
     X: fast-forward
