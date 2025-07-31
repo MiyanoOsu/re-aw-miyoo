@@ -3,6 +3,11 @@
 
 Port for miyoo devices
 
+# Note
+This release include demo version
+To play full version or 20th anniversary you need to paid
+Then download dos version (archive.org or else), name folder is "data" then place in folder /mnt/games/raw
+
 # How to build
 You need docker, debian linux or arch linux
 ~~~
@@ -23,9 +28,9 @@ make -j $(nproc)
     A: Jump
     B: Run / Shoot / Action
     Y: pause
-    X: hack speed
+    X: fast-forward
     Select: exit
-    Start: Password screen (to exit password screen select ok then press B)
+    Start: Exit (demo version), Password screen in paid version (to exit password screen select ok then press B)
     L: quick save
     R: quick load
 ~~~
